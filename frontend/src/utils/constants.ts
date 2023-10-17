@@ -1,10 +1,10 @@
 import { ProblemStatus } from "./types";
 
-const baseURL = "https://acodedaily.com";
+const baseURL = "https://acodedaily.com/api/v2/";
 
 export const constants = {
 	cfAPI: 'https://codeforces.com/api',
-	api: `${baseURL}/api`,
+	api: `${baseURL}`,
 	submissionFetchInterval: 30 * 1000,
 };
 
