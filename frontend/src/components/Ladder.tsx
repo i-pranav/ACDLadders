@@ -15,18 +15,19 @@ interface LadderProps {
   ladderData: LadderData;
   problemStatusMap: ProblemStatusMap;
   setUserStats: (stats: UserStats) => void;
-  tagStatus: boolean
+  tagStatus: boolean;
   loaderStatus: boolean;
   setloaderStatus: (data: boolean) => void;
   filters: Array<string>;
-  filterType: boolean
+  filterType: boolean;
 }
 
 function Ladder(props: LadderProps) {
   const data = props.ladderData;
   const [problems, setProblems] = useState<Problem[]>([]);
-
+  // console.log(props.filters, props.filterType);
   const fetchProblems = async () => {
+    // console.log(data.startRating, data.endRating)
     const res = await httpClient.request({
       method: "GET",
       url: `${constants.api}/ladder`,
@@ -38,10 +39,9 @@ function Ladder(props: LadderProps) {
     return res.data;
   };
 
-
-
   const updateProblemsWithStatus = (problems: Problem[]) => {
     let solvedCount = 0;
+    console.log("prob status map is ", props);
     const newProblems = problems.map((problem: Problem) => {
       const newStatus =
         props.problemStatusMap[getProblemID(problem)] || ProblemStatus.NONE;
@@ -69,14 +69,10 @@ function Ladder(props: LadderProps) {
 
       // filtering start
       if (props.filters.length > 0 && !props.filterType) {
-
         res = res.filter((problem: any) =>
           problem.tags.some((tag: string) => props.filters.includes(tag))
         );
-      }
-
-      else if (props.filters.length > 0 && props.filterType) {
-
+      } else if (props.filters.length > 0 && props.filterType) {
         res = res.filter((problem: any) =>
           props.filters.every((tag: string) => problem.tags.includes(tag))
         );
@@ -88,15 +84,12 @@ function Ladder(props: LadderProps) {
       props.setloaderStatus(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.ladderData, props.filters, props.filterType]);
-
-  useEffect(() => {
-    props.setloaderStatus(true);
-    updateProblemsWithStatus(problems);
-    props.setloaderStatus(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.problemStatusMap]);
-
+  }, [
+    props.ladderData,
+    props.filters,
+    props.filterType,
+    props.problemStatusMap,
+  ]);
 
   return (
     <div className="w-full problem-table text-center">
@@ -105,12 +98,8 @@ function Ladder(props: LadderProps) {
           <tr>
             <th>Index</th>
             <th>Problem</th>
-            {props.tagStatus &&
-              <th>Tags</th>
-            }
-            {!props.tagStatus &&
-              <th>Score</th>
-            }
+            {props.tagStatus && <th>Tags</th>}
+            {!props.tagStatus && <th>Score</th>}
             <th>Rating</th>
             <th>Status</th>
           </tr>
@@ -119,14 +108,19 @@ function Ladder(props: LadderProps) {
           {problems.map((problem, idx) => {
             const status = problem.status;
             return (
-              <TableRow key={idx} data={problem} status={status} index={idx} tagStatus={props.tagStatus} />
+              <TableRow
+                key={idx}
+                data={problem}
+                status={status}
+                index={idx}
+                tagStatus={props.tagStatus}
+              />
             );
           })}
         </tbody>
       </table>
     </div>
   );
-
 }
 
 export default Ladder;
