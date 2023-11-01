@@ -4,9 +4,6 @@ import { UserData, UserStats } from "../utils/types";
 
 function UserCard(props: { userData: UserData; userStats: UserStats }) {
   const { userData, userStats } = props;
-  // useEffect(() => {
-  // console.log("in user card", userStats);
-  // }, [userData, userStats]);
   if (!userData) return <div />;
   return (
     <div className="profileRow w-full">

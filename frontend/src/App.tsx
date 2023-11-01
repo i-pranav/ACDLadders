@@ -42,7 +42,6 @@ function App() {
   );
 
   const [selected, setSelected] = useState(1200);
-  // console.log("selected is " + selected);
   const [tag, setTag] = useState(false);
 
   const [loaderStatus, setloaderStatus] = useState(true);
@@ -79,7 +78,6 @@ function App() {
       });
 
       const startR = Math.floor(userInfo.rating / 100) * 100 + 200;
-      // console.log("startR is " + startR);
       localStorage.clear();
       localStorage.setItem("userInformation", JSON.stringify(userInfo));
 
@@ -115,7 +113,6 @@ function App() {
     setloaderStatus(false);
   };
 
-  // console.log("in app, " + JSON.stringify(problemStatusMap));
   useEffect(() => {
     setloaderStatus(true);
     const items = localStorage.getItem("userInformation");
@@ -124,6 +121,7 @@ function App() {
     );
     let startRating: number = parseInt(localStorage.getItem("start") ?? "0");
     let endRating: number = parseInt(localStorage.getItem("end") ?? "10");
+    let tagVal: boolean = localStorage.getItem("tags") === "true" ?? false;
     if (items) {
       const userInfo = JSON.parse(items);
       setUser(userInfo.handle);
@@ -147,6 +145,7 @@ function App() {
     });
     setStart(startRating);
     setEnd(endRating);
+    setTag(tagVal);
 
     setloaderStatus(false);
   }, []);
@@ -175,7 +174,6 @@ function App() {
         <div className="w-full p-3 md:p-10">
           <div className="w-full top-row flex flex-col-reverse justify-between md:flex-row sticky top-0 z-10 bg-[#2b2c3e] pt-2">
             <LadderSelector
-              // key={new Date().getTime()}
               showRating={showRating}
               startRating={900}
               endRating={3600}
@@ -233,7 +231,14 @@ function App() {
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
-                  onChange={(e) => setTag(e.target.checked)}
+                  checked={tag}
+                  onChange={(e) => {
+                    setTag(e.target.checked);
+                    localStorage.setItem(
+                      "tags",
+                      e.target.checked ? "true" : "false"
+                    );
+                  }}
                 />
                 <label className="inline pl-[0.15rem] hover:cursor-pointer text-gray-200 text-lg mr-1">
                   {tag ? "Score" : "Tags"}
@@ -242,14 +247,9 @@ function App() {
             </div>
           </div>
 
-          <UserCard
-            userData={userData}
-            userStats={userStats}
-            // key={new Date().getTime()}
-          />
+          <UserCard userData={userData} userStats={userStats} />
 
           <Sidebar
-            // key={new Date().getTime()}
             userData={userData}
             userStats={userStats}
             filters={filters}
@@ -259,7 +259,6 @@ function App() {
           />
 
           <Ladder
-            // key={new Date().getTime()}
             ladderData={ladderData}
             problemStatusMap={problemStatusMap}
             setUserStats={setUserStats}

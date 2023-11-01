@@ -59,7 +59,6 @@ function Sidebar(props: {
   ];
 
   const handleToggleText = (text: string) => {
-    // console.log(text);
     if (filters.includes(text)) {
       // If the text is already in the array, remove it
       const updatedFilters = filters.filter((item) => item !== text);

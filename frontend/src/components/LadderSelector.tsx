@@ -54,7 +54,6 @@ function LadderSelector(props: LadderSelectorProps) {
   };
 
   useEffect(() => {
-    // console.log("in ladder selector", props.start, props.end);
     setCurrOptions(options.slice(props.start, props.end));
   }, [props.start, props.end]);
 
@@ -65,7 +64,6 @@ function LadderSelector(props: LadderSelectorProps) {
     "bg-color-dark outline-none ring-1 ring-gray-300 font-medium rounded-lg text-sm md:text-xl px-2 py-1 md:px-5 md:py-2.5 mr-2";
 
   const handleSubmit = (option: number[]) => {
-    console.log(option);
     props.setLadderData({
       startRating: option[0],
       endRating: option[1],

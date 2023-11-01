@@ -25,9 +25,7 @@ interface LadderProps {
 function Ladder(props: LadderProps) {
   const data = props.ladderData;
   const [problems, setProblems] = useState<Problem[]>([]);
-  // console.log(props.filters, props.filterType);
   const fetchProblems = async () => {
-    // console.log(data.startRating, data.endRating)
     const res = await httpClient.request({
       method: "GET",
       url: `${constants.api}/ladder`,
@@ -41,7 +39,6 @@ function Ladder(props: LadderProps) {
 
   const updateProblemsWithStatus = (problems: Problem[]) => {
     let solvedCount = 0;
-    console.log("prob status map is ", props);
     const newProblems = problems.map((problem: Problem) => {
       const newStatus =
         props.problemStatusMap[getProblemID(problem)] || ProblemStatus.NONE;
