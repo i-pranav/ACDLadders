@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cfRankColor } from "../utils/constants";
 import { UserData, UserStats } from "../utils/types";
 
@@ -68,6 +68,10 @@ function Sidebar(props: {
       setFilters([...filters, text]);
     }
   };
+useEffect(() => {
+    let tagVal: boolean = localStorage.getItem("filterType") === "true" ?? false;
+    setFilterType(tagVal);
+}, [])
 
   return (
     <div>
@@ -76,7 +80,15 @@ function Sidebar(props: {
         type="checkbox"
         role="switch"
         id="flexSwitchCheckDefault"
-        onChange={(e) => setFilterType(e.target.checked)}
+                  checked={filterType}
+                  onChange={(e) => {
+                    setFilterType(e.target.checked);
+                    localStorage.setItem(
+                      "filterType",
+                      e.target.checked ? "true" : "false"
+                    );
+                  }}
+        // onChange={(e) => setFilterType(e.target.checked)}
       />
 
       <label className="inline pl-[0.15rem] hover:cursor-pointer text-gray-200 text-lg mr-1">
