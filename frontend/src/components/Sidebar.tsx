@@ -59,19 +59,23 @@ function Sidebar(props: {
   ];
 
   const handleToggleText = (text: string) => {
+    console.log(filters);
     if (filters.includes(text)) {
       // If the text is already in the array, remove it
       const updatedFilters = filters.filter((item) => item !== text);
       setFilters(updatedFilters);
+      localStorage.setItem("filters", JSON.stringify(updatedFilters));
     } else {
       // If the text is not in the array, add it
       setFilters([...filters, text]);
+      localStorage.setItem("filters", JSON.stringify([...filters, text]));
     }
   };
-useEffect(() => {
-    let tagVal: boolean = localStorage.getItem("filterType") === "true" ?? false;
+  useEffect(() => {
+    let tagVal: boolean =
+      localStorage.getItem("filterType") === "true" ?? false;
     setFilterType(tagVal);
-}, [])
+  }, []);
 
   return (
     <div>
@@ -80,14 +84,14 @@ useEffect(() => {
         type="checkbox"
         role="switch"
         id="flexSwitchCheckDefault"
-                  checked={filterType}
-                  onChange={(e) => {
-                    setFilterType(e.target.checked);
-                    localStorage.setItem(
-                      "filterType",
-                      e.target.checked ? "true" : "false"
-                    );
-                  }}
+        checked={filterType}
+        onChange={(e) => {
+          setFilterType(e.target.checked);
+          localStorage.setItem(
+            "filterType",
+            e.target.checked ? "true" : "false"
+          );
+        }}
         // onChange={(e) => setFilterType(e.target.checked)}
       />
 

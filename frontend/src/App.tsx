@@ -122,6 +122,10 @@ function App() {
     let startRating: number = parseInt(localStorage.getItem("start") ?? "0");
     let endRating: number = parseInt(localStorage.getItem("end") ?? "10");
     let tagVal: boolean = localStorage.getItem("tags") === "true" ?? false;
+    let selectedFilters: string[] = JSON.parse(
+      localStorage.getItem("filters") ?? "[]"
+    );
+
     if (items) {
       const userInfo = JSON.parse(items);
       setUser(userInfo.handle);
@@ -146,6 +150,7 @@ function App() {
     setStart(startRating);
     setEnd(endRating);
     setTag(tagVal);
+    setFilters(selectedFilters);
 
     setloaderStatus(false);
   }, []);
