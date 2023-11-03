@@ -42,10 +42,9 @@ function App() {
   );
 
   const [selected, setSelected] = useState(1200);
-
   const [tag, setTag] = useState(false);
 
-  const [loaderStatus, setloaderStatus] = useState(true)
+  const [loaderStatus, setloaderStatus] = useState(true);
 
   const [showRating, setShowRating] = useState(10);
 
@@ -54,8 +53,8 @@ function App() {
 
   // filtering UseState
   const initialArray: string[] = [];
-  const [filters, setFilters] = useState<string[]>(initialArray)
-  const [filterType, setFilterType] = useState(false)
+  const [filters, setFilters] = useState<string[]>(initialArray);
+  const [filterType, setFilterType] = useState(false);
   // end Here
 
   const loadUser = async () => {
@@ -79,17 +78,16 @@ function App() {
       });
 
       const startR = Math.floor(userInfo.rating / 100) * 100 + 200;
+      localStorage.clear();
+      localStorage.setItem("userInformation", JSON.stringify(userInfo));
 
+      localStorage.setItem("selectedRating", startR.toString());
+      setSelected(startR);
       setLadderData({
         startRating: startR,
         endRating: startR + 100,
       });
 
-
-      localStorage.clear()
-      localStorage.setItem('userInformation', JSON.stringify(userInfo));
-
-      setSelected(startR);
       toast.success("CF Handle found 😊");
     } catch (err: any) {
       toast.error("CF Handle not Found Try again");
@@ -100,7 +98,12 @@ function App() {
   const updateProblemStatusMap = async (userData: UserData) => {
     setloaderStatus(true);
     let newMap = {} as ProblemStatusMap;
-    const submissions = await fetchUserSubmissionsWithRetry(userData, 3, loaderStatus, setloaderStatus);
+    const submissions = await fetchUserSubmissionsWithRetry(
+      userData,
+      3,
+      loaderStatus,
+      setloaderStatus
+    );
     for (const submission of submissions) {
       const problem = { ...submission.problem };
       const id = getProblemID(problem);
@@ -110,16 +113,22 @@ function App() {
     setloaderStatus(false);
   };
 
-
-
-
-
   useEffect(() => {
     setloaderStatus(true);
-    const items = localStorage.getItem('userInformation');
+    const items = localStorage.getItem("userInformation");
+    let storedRating: number = parseInt(
+      localStorage.getItem("selectedRating") ?? "1200"
+    );
+    let startRating: number = parseInt(localStorage.getItem("start") ?? "0");
+    let endRating: number = parseInt(localStorage.getItem("end") ?? "10");
+    let tagVal: boolean = localStorage.getItem("tags") === "true" ?? false;
+    let selectedFilters: string[] = JSON.parse(
+      localStorage.getItem("filters") ?? "[]"
+    );
+
     if (items) {
       const userInfo = JSON.parse(items);
-      setUser(userInfo.handle)
+      setUser(userInfo.handle);
       setUserData({
         handle: userInfo.handle,
         image: userInfo.avatar,
@@ -127,21 +136,29 @@ function App() {
         rating: userInfo.rating,
         rank: userInfo.rank,
       });
-      const startR = Math.floor(userInfo.rating / 100) * 100 + 200;
-      setLadderData({
-        startRating: startR,
-        endRating: startR + 100,
-      });
-      setSelected(startR);
+      storedRating =
+        localStorage.getItem("selectedRating") == null
+          ? Math.floor(userInfo.rating / 100) * 100 + 200
+          : storedRating;
     }
-    setloaderStatus(false)
-  }, []);
 
+    setSelected(storedRating);
+    setLadderData({
+      startRating: storedRating,
+      endRating: storedRating + 100,
+    });
+    setStart(startRating);
+    setEnd(endRating);
+    setTag(tagVal);
+    setFilters(selectedFilters);
+
+    setloaderStatus(false);
+  }, []);
 
   useEffect(() => {
     setloaderStatus(true);
     if (!userData) return;
-    setProblemStatusMap({});
+    // setProblemStatusMap({});
     if (fetchIntervalID) {
       clearInterval(fetchIntervalID);
     }
@@ -176,7 +193,6 @@ function App() {
               setStart={setStart}
               end={end}
               setEnd={setEnd}
-
             />
 
             <div className="w-full md:w-3/5 flex flex-row justify-between py-2 md:px-10 md:justify-center">
@@ -220,7 +236,14 @@ function App() {
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
-                  onChange={(e) => setTag(e.target.checked)}
+                  checked={tag}
+                  onChange={(e) => {
+                    setTag(e.target.checked);
+                    localStorage.setItem(
+                      "tags",
+                      e.target.checked ? "true" : "false"
+                    );
+                  }}
                 />
                 <label className="inline pl-[0.15rem] hover:cursor-pointer text-gray-200 text-lg mr-1">
                   {tag ? "Score" : "Tags"}
@@ -231,7 +254,14 @@ function App() {
 
           <UserCard userData={userData} userStats={userStats} />
 
-          <Sidebar userData={userData} userStats={userStats} filters={filters} setFilters={setFilters} filterType={filterType} setFilterType={setFilterType} />
+          <Sidebar
+            userData={userData}
+            userStats={userStats}
+            filters={filters}
+            setFilters={setFilters}
+            filterType={filterType}
+            setFilterType={setFilterType}
+          />
 
           <Ladder
             ladderData={ladderData}
@@ -246,11 +276,7 @@ function App() {
         </div>
 
         {loaderStatus && <div className="loader"></div>}
-
-
       </div>
-
-
 
       <div className="w-full bg-[#151834] text-center text-gray-200 p-2">
         <p className="mt-5 mb-2 text-base">
@@ -265,7 +291,6 @@ function App() {
         <SocialBar />
       </div>
       <Footer />
-
     </div>
   );
 }
