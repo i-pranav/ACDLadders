@@ -70,6 +70,11 @@ const Footer: React.FC = () => {
           image="./assets/profile/default.png"
           linkedIn="#"
         />
+        <FooterCard
+          name="Harsh Rishi"
+          image="./assets/profile/harsh.jpg"
+          linkedIn="https://www.linkedin.com/in/harsh-rishi-miglani-985025255/"
+        />
       </div>
 
       <a
