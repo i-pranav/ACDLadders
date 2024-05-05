@@ -34,7 +34,52 @@ function Ladder(props: LadderProps) {
         endRating: data.endRating,
       },
     });
-    return res.data;
+    // console.log("res: ", res.data);
+    const res2 = await fetchNewProblems();
+    res2.problems = res2.problems.filter(
+      (problem: any) =>
+        problem.rating >= data.startRating && problem.rating < data.endRating
+    );
+    // every other problem is from ladder api and every other is from codeforces.com/api/problemset.problems
+    let arr = [];
+    let ptr = 0;
+    let ptr2 = 0;
+    let mp: any = {};
+    for (let i = 0; i < res.data.length / 2; i++) {
+      arr.push(res.data[ptr++]);
+      mp[res.data[ptr - 1].name] = true;
+      while (mp[res2.problems[ptr2].name]) {
+        ptr2++;
+        if (ptr2 >= res2.problems.length) {
+          break;
+        }
+      }
+      if (ptr2 < res2.problems.length) {
+        arr.push(res2.problems[ptr2]);
+        mp[res2.problems[ptr2].name] = true;
+        ptr2++;
+      } else {
+        arr.push(res.data[ptr]);
+        mp[res.data[ptr].name] = true;
+        ptr++;
+      }
+    }
+
+    return arr;
+  };
+
+  const fetchNewProblems = async () => {
+    const tags = "constructive algorithms";
+    const res = await httpClient.request({
+      method: "GET",
+      url: `https://codeforces.com/api/problemset.problems?tags=${tags}`,
+      params: {
+        startRating: data.startRating,
+        endRating: data.endRating,
+      },
+    });
+    // console.log("res: ", res);
+    return res.result;
   };
 
   const updateProblemsWithStatus = (problems: Problem[]) => {
