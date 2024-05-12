@@ -48,7 +48,7 @@ function Ladder(props: LadderProps) {
     for (let i = 0; i < res.data.length / 2; i++) {
       arr.push(res.data[ptr++]);
       mp[res.data[ptr - 1].name] = true;
-      while (mp[res2.problems[ptr2].name]) {
+      while (ptr2 < res2.problems.length && mp[res2.problems[ptr2].name]) {
         ptr2++;
         if (ptr2 >= res2.problems.length) {
           break;
