@@ -25,6 +25,7 @@ import Footer from "./components/Footer";
 import { toast } from "react-toastify";
 import SocialBar from "./components/SocialBar";
 import Sidebar from "./components/Sidebar";
+import Popup from "./components/Popup";
 
 function App() {
   const [user, setUser] = useState<string>("");
@@ -56,6 +57,9 @@ function App() {
   const [filters, setFilters] = useState<string[]>(initialArray);
   const [filterType, setFilterType] = useState(false);
   // end Here
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const loadUser = async () => {
     setloaderStatus(true);
@@ -112,6 +116,49 @@ function App() {
     setProblemStatusMap(newMap);
     setloaderStatus(false);
   };
+
+  const checkHealth = async () => {
+    let result = [false, false];
+    try {
+      const res_ladder = await httpClient.request({
+        method: "GET",
+        url: `https://acodedaily.com/health`,
+      });
+      if (res_ladder === "ACDLadders backend working...") result[0] = true;
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      const res_cf = await httpClient.request({
+        method: "GET",
+        url: `${constants.cfAPI}/user.info`,
+        params: {
+          handles: "tourist",
+          checkHistoricHandles: false,
+        },
+      });
+      if (res_cf.status === "OK") result[1] = true;
+    } catch (error) {
+      console.log(error);
+    }
+    return result;
+  };
+
+  useEffect(() => {
+    checkHealth()
+      .then((res) => {
+        if (!(res[0] && res[1])) setShowPopup(true);
+        if (!res[0])
+          setPopupMessage(
+            "Ladder is down at the moment, Please try again after a while."
+          );
+        if (!res[1])
+          setPopupMessage(
+            "Codeforces API is down at the moment, Please try again after a while."
+          );
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   useEffect(() => {
     setloaderStatus(true);
@@ -175,6 +222,14 @@ function App() {
   return (
     <div className="w-full bg-color ">
       <Header heading="ACD Ladders!" />
+      <Popup
+        isVisible={showPopup}
+        onClose={() => {
+          setShowPopup(false);
+          setPopupMessage("");
+        }}
+        message={popupMessage}
+      />
       <div className="w-full">
         <div className="w-full p-3 md:p-10">
           <div className="w-full top-row flex flex-col-reverse justify-between md:flex-row sticky top-0 z-10 bg-[#2b2c3e] pt-2">
