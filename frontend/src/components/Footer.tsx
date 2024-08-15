@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
 
   return (
     <div className="footer">
-      <div className="flex flex-wrap justify-evenly">
+      <div className="flex justify-evenly gap-4">
         <FooterCard
           name="Pranav Mehta"
           image="./assets/profile/pranavBhaiya.png"
@@ -52,6 +52,8 @@ const Footer: React.FC = () => {
           image="./assets/profile/ayush.jpeg"
           linkedIn="https://www.linkedin.com/in/ayush-singh-77200a211/"
         />
+      </div>
+      <div className="flex justify-evenly gap-4">
         <FooterCard
           name="Shubham Pandey"
           image="./assets/profile/shubham.jpg"
@@ -74,6 +76,11 @@ const Footer: React.FC = () => {
           name="Harsh Rishi"
           image="./assets/profile/harsh.jpg"
           linkedIn="https://www.linkedin.com/in/harsh-rishi-miglani-985025255/"
+        />
+        <FooterCard
+          name="Vedant Mishra"
+          image="./assets/profile/vedant_pfp.jpg"
+          linkedIn="https://www.linkedin.com/in/vedant-mishra-671986201/"
         />
       </div>
 
