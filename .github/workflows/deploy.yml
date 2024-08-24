@@ -1,0 +1,49 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - v1+v2+v3
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies and build frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Copy and replace frontend build
+        run: |
+          mkdir -p backend/src/build_v3
+          cp -r frontend/build/* backend/src/build_v3/
+          mv backend/src/build_v3/index.html backend/src/build_v3/index_v3.html
+
+      - name: Build Docker image
+        run: |
+          docker build -t shubhamjr/acd-ladder:${{ github.sha }} ./backend
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Tag Docker image
+        run: |
+          docker tag shubhamjr/acd-ladder:${{ github.sha }} shubhamjr/acd-ladder:latest
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push shubhamjr/acd-ladder:latest
